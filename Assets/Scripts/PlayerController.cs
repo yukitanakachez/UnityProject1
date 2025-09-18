@@ -1,28 +1,28 @@
 using UnityEngine;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-    public float speed = 0;
-    
-    private Rigidbody rb;
-    private float movementX;
-    private float movementY;
-    void Start()
+    public float speed = 5f;
+    private Vector2 moveInput;
+
+    void OnMove(InputValue value)
     {
-        rb = GetComponent<Rigidbody>();
+        moveInput = value.Get<Vector2>();
     }
 
-    void OnMove(InputValue movementValue)
+    void Update()
     {
-        Vector2 movementVector = movementValue.Get<Vector2>();
-        movementX = movementVector.x;
-        movementY = movementVector.y;
-    }
+        Vector3 move = new Vector3(moveInput.x, 0f, moveInput.y);
 
-    void FixedUpdate()
-    {
-        Vector3 movement = new Vector3(movementX, 0.0f, movementY);
-        rb.AddForce(movement*speed);
+        if (move != Vector3.zero)
+        {
+            // Face the movement direction instantly
+            transform.rotation = Quaternion.LookRotation(move, Vector3.up);
+
+            // Move the character
+            transform.Translate(move.normalized * speed * Time.deltaTime, Space.World);
+        }
     }
 }
